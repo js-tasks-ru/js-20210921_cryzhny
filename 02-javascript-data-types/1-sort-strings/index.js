@@ -5,5 +5,11 @@
  * @returns {string[]}
  */
 export function sortStrings(arr, param = 'asc') {
+  const collator = Intl.Collator(undefined, { caseFirst: 'upper' });
+  const arrCopy = [...arr];
+  const sorted = arrCopy.sort(
+    (a,b) => param === 'asc' ? collator.compare(a, b) : collator.compare(b, a)
+  );
 
+  return sorted;
 }
