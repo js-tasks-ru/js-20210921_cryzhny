@@ -1,12 +1,18 @@
 export default class NotificationMessage {
+  static active;
+
+  timer;
+
   constructor(message = '', options = {}) {
     this.message = message;
     this.options = options;
     this.open = false;
+
+    this.render();
   }
 
   get template() {
-    const duration = this.options.duration && this.options.duration / 100;
+    const duration = this.options.duration && this.options.duration / 1000;
     return `
       <div class="notification ${this.options.type}" style="--value:${duration}s">
         <div class="timer"></div>
@@ -20,24 +26,39 @@ export default class NotificationMessage {
     `;
   }
 
-  show() {
-    this.open = true;
+  render() {
     const element = document.createElement('div');
 
     element.innerHTML = this.template;
 
-    this.element = element;
-    document.body.insertAdjacentHTML('beforeend', this.element.innerHTML);
+    this.element = element.firstElementChild;
+  }
+
+  show() {
+    if (NotificationMessage.active) {
+      NotificationMessage.active.remove();
+    }
+
+    document.body.append(this.element);
+
+    this.timerId = setTimeout(() => {
+      this.remove()
+    }, this.options.duration);
+
+    NotificationMessage.active = this;
   }
 
   remove() {
-    this.open = false;
-    const noty = document.querySelector('.notification')[0]
-    noty.parentElement.removeChild(noty);
+    clearTimeout(this.timer);
+
+    if (this.element) {
+      this.element.remove();
+    }
   }
 
   destroy() {
     this.remove();
     this.element = null;
+    NotificationMessage.active = null;
   }
 }
