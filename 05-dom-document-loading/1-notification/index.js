@@ -6,7 +6,6 @@ export default class NotificationMessage {
   constructor(message = '', options = {}) {
     this.message = message;
     this.options = options;
-    this.open = false;
 
     this.render();
   }
